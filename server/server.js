@@ -80,13 +80,7 @@ app.get("/auth/google/callback",
 
 
 
-
-if (process.env.NODE_ENV === "production") {
-    http.createServer(function (req, res) {
-        res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-        res.end();
-    }).listen(80);
-} else if (process.env.NODE_ENV === "development") {
+ if (process.env.NODE_ENV === "development") {
   console.log(process.env.NODE_ENV);
     app.listen(5000);
 }
