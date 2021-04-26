@@ -1,0 +1,54 @@
+{
+  "name": "notus-react",
+  "version": "1.1.0",
+  "description": "Vateud website",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creativetimofficial/notus-react.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-oauth2": "^1.5.0",
+    "passport-openid-oauth20": "^1.2.6",
+    "react": "^17.0.1",
+    "react-dom": "17.0.1",
+    "react-router": "5.2.0",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "4.0.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "optionalDependencies": {
+    "typescript": "4.2.3"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/creativetimofficial/notus-react/issues"
+  },
+  "homepage": "https://github.com/creativetimofficial/notus-react#readme",
+  "main": "index.js",
+  "author": "Óskar Helgi Berenguer"
+}
