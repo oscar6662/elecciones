@@ -14,8 +14,6 @@
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
     "passport-http-bearer": "^1.0.1",
-    "passport-oauth2": "^1.5.0",
-    "passport-openid-oauth20": "^1.2.6",
     "react": "^17.0.1",
     "react-dom": "17.0.1",
     "react-router": "5.2.0",
@@ -23,8 +21,9 @@
     "react-scripts": "4.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
+    "start": "npm run third && npm run second",
+    "second": "cd client && npm run start",
+    "third": "cd server && node server"
   },
   "eslintConfig": {
     "extends": "react-app"
