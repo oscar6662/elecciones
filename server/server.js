@@ -1,14 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import fs from 'fs';
-import http from 'http';
-import https from 'https';
 import dotenv from 'dotenv';
 import passport from 'passport';
-import chalk from 'chalk';
-import GoogleStrategy from 'passport-google-oauth20';
-import Strategy from 'passport-http-bearer';
+
+import fetch from 'node-fetch';
 dotenv.config();
 let user = {};
 
@@ -20,37 +15,8 @@ passport.deserializeUser((user, cb) => {
     cb(null, user);
 });
 
-// Google Strategy
-passport.use(new GoogleStrategy({
-        clientID: process.env.clientID,
-        clientSecret: process.env.clientSecret,
-        callbackURL: "/auth/google/callback"
-    },
-    (accessToken, refreshToken, profile, cb) => {
-        console.log(chalk.blue(JSON.stringify(profile)));
-        user = { ...profile };
-        return cb(null, profile);
-}));
-
-
-passport.use("v", new Strategy({
-  authorizationURL: 'http://auth-dev.vatsim.net',
-  client_id: process.env.clientID,
-  redirect_uri: "/auth/callback",
-  response_type: 'code',
-  scope:"full_name vatsim_details email country",
-},
-function(accessToken, refreshToken, profile, cb) {
-  console.log("j");
-  User.findOrCreate({ exampleId: profile.id }, function (err, user) {
-    return cb(err, user);
-  });
-}
-));
-
 const app = express();
 app.use(cors());
-
 app.use(passport.initialize());
 
 app.get("/",(req,res)=>{
@@ -58,29 +24,35 @@ app.get("/",(req,res)=>{
     res.redirect('/hola')
   }
   res.redirect('/hola');
-})
+});
 
-app.get("/auth/google", passport.authenticate("google", {
-  scope: ["profile", "email"]
-}));
-app.get("/auth/google/callback",
-  passport.authenticate("google"),
-      (req, res) => {
-          res.redirect("/profile");
-      });
-
-app.get("/auth", passport.authenticate("v", {
-  scope: ["profile", "email"]
-}));
-app.get("/auth/google/callback",
-  passport.authenticate("google"),
-      (req, res) => {
-          res.redirect("/profile");
-      });
+app.get("/auth", (req,res)=>{
+  res.redirect(`${process.env.REACT_APP_API_URL}/oauth/authorize?client_id=${process.env.client_id}
+  &redirect_uri=http://localhost:5000/auth/callback
+  &response_type=code
+  &scope=full_name`);
+});
 
 
+app.get("/auth/callback",(req, res) => {
+  const body ={
+    grant_type:'authorization_code',
+    client_id: process.env.client_id,
+    client_secret: process.env.client_secret,
+    redirect_uri: 'http://localhost:5000/auth/callback',
+    code: req.query.code,
+  }
+  fetch(`${process.env.REACT_APP_API_URL}/oauth/token`, {
+    body:    JSON.stringify(body),
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  .then(res => res.json())
+  .then(json => console.log(json))
+  .then(res.redirect('hola'));
+});
 
- if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development") {
   console.log(process.env.NODE_ENV);
     app.listen(5000);
 }
@@ -96,7 +68,6 @@ app.get("/auth/google/callback",
  */
 // eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  console.log("hæ");
   res.status(404).json({ error: 'Not found' });
 }
 
