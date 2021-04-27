@@ -2,11 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import passport from 'passport';
-
 import fetch from 'node-fetch';
-dotenv.config();
-let user = {};
 
+
+dotenv.config();
 passport.serializeUser((user, cb) => {
     cb(null, user);
 });

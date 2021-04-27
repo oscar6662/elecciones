@@ -5,7 +5,7 @@
 /client/node_modules
 /.pnp
 .pnp.js
-setupProxy.js
+/client/src/setupProxy.js
 # testing
 /coverage
 
