@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import fetch from 'node-fetch';
 
+const PORT = process.env.PORT || 5000;
 
 dotenv.config();
 passport.serializeUser((user, cb) => {
@@ -51,10 +52,11 @@ app.get("/auth/callback",(req, res) => {
   .then(res.redirect('hola'));
 });
 
-if (process.env.NODE_ENV === "development") {
-  console.log(process.env.NODE_ENV);
-    app.listen(5000);
-}
+
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});
+
 
 
 
