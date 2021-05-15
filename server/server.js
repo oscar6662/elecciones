@@ -1,90 +1,41 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import passport from 'passport';
-import fetch from 'node-fetch';
+import { router as authRouter } from './controllers/user/auth.js';
+import {requireAuthentication} from './controllers/user/auth.js';
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-dotenv.config();
-passport.serializeUser((user, cb) => {
-    cb(null, user);
-});
-
-passport.deserializeUser((user, cb) => {
-    cb(null, user);
-});
-
 const app = express();
-app.use(cors());
+
+app.use(express.json());
 app.use(passport.initialize());
+app.use(authRouter);
 
-app.get("/",(req,res)=>{
-  if(2==3){
-    res.redirect('/hola')
+app.get("/", (req,res)=>{
+  if(!true){
+    res.redirect('/auth')
   }
-  res.redirect('/hola');
 });
 
-app.get("/auth", (req,res)=>{
-  res.redirect(`${process.env.REACT_APP_API_URL}/oauth/authorize?client_id=${process.env.client_id}
-  &redirect_uri=http://localhost:5000/auth/callback
-  &response_type=code
-  &scope=full_name`);
-});
+app.get('/api/caroline', requireAuthentication, (req,res)=>{
+  return res.json("YES CAROLINE");
+})
 
-
-app.get("/auth/callback",(req, res) => {
-  const body ={
-    grant_type:'authorization_code',
-    client_id: process.env.client_id,
-    client_secret: process.env.client_secret,
-    redirect_uri: 'http://localhost:5000/auth/callback',
-    code: req.query.code,
-  }
-  fetch(`${process.env.REACT_APP_API_URL}/oauth/token`, {
-    body:    JSON.stringify(body),
-    method: 'post',
-    headers: { 'Content-Type': 'application/json' },
-  })
-  .then(res => res.json())
-  .then(json => console.log(json))
-  .then(res.redirect('hola'));
-});
-
-
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`);
-});
-
-
-
-
-/**
- * Middleware sem sér um 404 villur.
- *
- * @param {object} req Request hlutur
- * @param {object} res Response hlutur
- * @param {function} next Næsta middleware
- */
-// eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  res.status(404).json({ error: 'Not found' });
+  res.redirect('/')
 }
 
-/**
- * Middleware sem sér um villumeðhöndlun.
- *
- * @param {object} err Villa sem kom upp
- * @param {object} req Request hlutur
- * @param {object} res Response hlutur
- * @param {function} next Næsta middleware
- */
-// eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
   console.error(err);
   res.status(500).json({ error: 'Something went wrong' });
 }
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});
