@@ -22,6 +22,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
     "pg": "^8.6.0",
     "react": "^17.0.1",
     "react-dom": "17.0.1",
@@ -35,7 +36,6 @@
     "start": "npm run third && npm run second",
     "second": "cd client && npm run start",
     "third": "cd server && node server"
-    
   },
   "eslintConfig": {
     "extends": "react-app"
