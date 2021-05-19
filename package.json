@@ -9,6 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "babel-eslint": "^10.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "db": "^3.3.1",
