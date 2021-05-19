@@ -61,7 +61,7 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/notus-react/issues"
   },
-  "homepage": ".",
+  "homepage": "https://vatspa.herokuapp.com",
   "main": "index.js",
   "author": "Óskar Helgi Berenguer"
 }
