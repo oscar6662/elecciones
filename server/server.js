@@ -14,7 +14,7 @@ import { userData } from './controllers/user/users.js';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const buildPath = path.join(__dirname, '..', 'build');
+const buildPath = path.join(new URL('../build', import.meta.url));
 
 const app = express();
 app.use(express.static(buildPath));
