@@ -34,7 +34,7 @@
   "scripts": {
     "start-client": "cd client && npm run start",
     "start-server": "node server/server",
-    "start": "start-client && start-server"
+    "start": "npm:start-client && npm:start-server"
     
   },
   "eslintConfig": {
