@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import path from 'path';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
 import {
   router as authRouter,
   isAuthenticated,
@@ -13,11 +14,11 @@ import { userData } from './controllers/user/users.js';
 
 dotenv.config();
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5000;
-const buildPath = path.join(new URL('../build', import.meta.url));
 
 const app = express();
-app.use(express.static(buildPath));
+app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
@@ -39,6 +40,10 @@ app.get('/api/user', requireAuthentication, async (req, res) => {
 app.get('/api/user/name', requireAuthentication, async (req, res) => {
   const data = await userData(req.cookies.token);
   return res.json(data.data.personal.name_full);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
 
 function notFoundHandler(req, res) {
