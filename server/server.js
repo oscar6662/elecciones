@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import passport from 'passport';
-import path from 'path';
+import path, {dirname} from 'path';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import {
