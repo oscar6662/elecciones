@@ -32,8 +32,9 @@
     "sass": "^1.32.13"
   },
   "scripts": {
-    "start": "cd server && node server",
-    "start-client": "cd client && npm run start"
+    "start-client": "cd client && npm run start",
+    "start": "node server/server"
+    
   },
   "eslintConfig": {
     "extends": "react-app"
