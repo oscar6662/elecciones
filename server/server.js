@@ -6,6 +6,8 @@ import {
   isAuthenticated,
   requireAuthentication,
 } from './controllers/user/auth.js';
+import { router as candidateRouter } from './controllers/user/candidates.js';
+import { userData } from './controllers/user/users.js';
 
 dotenv.config();
 
@@ -16,17 +18,23 @@ const app = express();
 app.use(express.json());
 app.use(passport.initialize());
 app.use(authRouter);
+app.use(candidateRouter);
 
-app.get('/api/authenticated', (req, res) => {
-  if (isAuthenticated) {
-    res.json({ loggedIn: true });
+app.get('/api/authenticated', async (req, res) => {
+  if (await isAuthenticated(req)) {
+    return res.json({ loggedIn: true });
   }
-  res.json({ loggedIn: false });
+  return res.json({ loggedIn: false });
 });
 
-app.get('/api/user', requireAuthentication, (req, res) => {
-  console.log(req.user);
-  res.json(req.user);
+app.get('/api/user', requireAuthentication, async (req, res) => {
+  const data = await userData(req.cookies.token);
+  return res.json(data.data);
+});
+
+app.get('/api/user/name', requireAuthentication, async (req, res) => {
+  const data = await userData(req.cookies.token);
+  return res.json(data.data.personal.name_full);
 });
 
 function notFoundHandler(req, res) {

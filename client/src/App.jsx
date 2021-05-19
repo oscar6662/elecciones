@@ -1,25 +1,27 @@
-import { Route, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
 import React from 'react';
 import Index from "./views/Index";
+import Vote from './views/Vote';
+import FormPage from './views/FormPage';
+import Candidates from './views/Candidates';
+
+import './assets/styles/config.scss';
+import './assets/styles/grid.scss';
+
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 export default function App() {
-  async function loggedIn(){
-    const authenticated = fetch('/api/authenticated');
-    if(authenticated.loggedIn === true) return true;
-    return false;
-  }
-  
   return (
     <Router>
       <Switch>
-        
-      {loggedIn ? (
-        <Route exact path="/" component={Index} />
-      ) : (
-        <Route exact path="/" render={() => (window.location = "http://localhost:5000/api/auth")} />
-      )}
-        
+      <Route exact path="/" component={Index}/>
+      <Route exact path="/form" component={FormPage}/>
+      <Route exact path="/candidates" component={Candidates}/>
+      <Route exact path="/vote" component={Vote}/>
+      <Route path="**" component={Index}/>
       </Switch>
-    </Router>  
+      
+    </Router>
+    
   );
 }

@@ -15,7 +15,7 @@ router.get('/api/auth', (req, res) => {
   res.redirect(`${process.env.REACT_APP_API_URL}/oauth/authorize?client_id=${process.env.client_id}
   &redirect_uri=http://localhost:5000/api/auth/callback
   &response_type=code
-  &scope=email`);
+  &scope=full_name+email+vatsim_details`);
 });
 
 router.get('/api/auth/callback', async (req, res) => {
@@ -56,33 +56,64 @@ router.get('/api/auth/callback', async (req, res) => {
       httpOnly: true,
     });
 
-    return res.json({ token });
+    return res.redirect('http://localhost:3000/');
   }
   return res.sendStatus(403);
 });
 
-export function requireAuthentication(req, res, next) {
+export async function requireAuthentication(req, res, next) {
   const { token } = req.cookies;
   if (token == null) return res.sendStatus(401);
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    return next();
-  });
-  return res.sendStatus(403);
-}
-
-export function isAuthenticated(req) {
-  const { token } = req.cookies;
-  if (token == null) return false;
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  const verify = jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return false;
     req.user = user;
     return true;
   });
-  return false;
+
+  if (verify === false) return res.status(401).json({ error: 'token verification failed' });
+
+  const q = 'SELECT date FROM token WHERE jwt = ($1)';
+  try {
+    const r = await query(q, [token]);
+    if (r.rows.length < 0) return res.status(401).json({ error: 'No token found' });
+    if (r.rows[0].date < new Date(Date.now())) {
+      return res.status(401).json({ error: 'token expired' });
+    }
+    return next();
+  } catch (e) {
+    return res.status(401).json({ error: e });
+  }
+}
+
+export async function isAuthenticated(req) {
+  const { token } = req.cookies;
+  if (token == null) return false;
+  const verify = jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return false;
+    req.user = user;
+    return true;
+  });
+
+  if (verify === false) return false;
+
+  const q = 'SELECT date FROM token WHERE jwt = ($1)';
+  try {
+    const r = await query(q, [token]);
+    if (r.rows.length < 0) return false;
+    if (r.rows[0].date < new Date(Date.now())) {
+      return false;
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 router.get('/api/logout', requireAuthentication, async (req, res) => {
-
+  const { token } = req.cookies;
+  res.cookie('token', token, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+  res.redirect('/');
 });

@@ -1,4 +1,6 @@
 import React, { useState, useEffect  } from 'react';
+import Navbar from '../components/Navbar';
+import '../assets/styles/main.scss'
 
 export default function Index(){
   const [data, setData] = useState([]);
@@ -17,21 +19,31 @@ export default function Index(){
   },[true]);
   
   return(
-    <div
-            className="card"
-            style={{ border: `1px solid black`, borderRadius: 2 }}
-            onClick={() => window.location = '/api/logout'}
-        >
-            <div>
-                <p style={{ margin: 0, textAlign: "left", padding: "5px 0px 5px 10px" }}>
-                    {isLoading ? (
-                      <>Loading Content</>
-                    ):(
-                      <>{data.email}</>
-                    )}
-                </p>
-            </div>
-
+    <div className="screen">
+    <Navbar/>
+    <section className="index grid">
+      <div className="box col-3 col-md-12 col-sm-12">
+        <a href="/form">
+          <h1>Presentar Candidato</h1>
+        </a>
+        <p>
+          Crees tener lo que se require para dirigir el vACC espanol?
+        </p>
+      </div>
+      <div className="box col-3 col-md-12 col-sm-12">
+        <a href="/candidates">
+          <h1>Candidatos</h1>
+        </a>
+        <p>Candidatos presentados hasta el momento</p>
+      </div>
+      <div className="box col-3 col-md-12 col-sm-12">
+        <h2>6 de Septiembre</h2>
+        <a href="#">
+          <h1>Votar</h1>
+        </a>
+        <p>Guardate la fecha y no olvides votar!</p>
+      </div>
+    </section>
         </div>
   );
 }
