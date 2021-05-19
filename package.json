@@ -36,7 +36,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "start": "cd client && npm run start",
+    "start": "node server/server",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "eslintConfig": {

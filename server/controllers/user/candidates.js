@@ -12,7 +12,7 @@ router.post('/api/candidate', requireAuthentication, async (req, res) => {
   const {
     name, id, email, text,
   } = req.body;
-  const q = 'INSERT INTO candidates (name, id, email, text) VALUES ($1, $2, $3, $4)';
+  const q = 'INSERT INTO candidates (name, id, email, txt) VALUES ($1, $2, $3, $4)';
 
   try {
     await query(q, [name, id, email, text]);
