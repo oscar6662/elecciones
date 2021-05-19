@@ -32,9 +32,9 @@
     "sass": "^1.32.13"
   },
   "scripts": {
-    "start-client": "cd client && npm run start",
-    "start-server": "node server/server",
-    "start": "npm run start-client && npm run start-server"
+    "start": "npm run third && npm run second",
+    "second": "cd client && npm run start",
+    "third": "cd server && node server"
     
   },
   "eslintConfig": {
