@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.9b811d4c.chunk.css",
+    "main.js": "/static/js/main.dccb3527.chunk.js",
+    "main.js.map": "/static/js/main.dccb3527.chunk.js.map",
+    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
+    "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
+    "static/js/2.df41e43e.chunk.js": "/static/js/2.df41e43e.chunk.js",
+    "static/js/2.df41e43e.chunk.js.map": "/static/js/2.df41e43e.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.16346b36c33089d576529e128c548a5a.js": "/precache-manifest.16346b36c33089d576529e128c548a5a.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.9b811d4c.chunk.css.map": "/static/css/main.9b811d4c.chunk.css.map",
+    "static/media/VATSPA_LOGO.png": "/static/media/VATSPA_LOGO.2300c949.png"
+  }
+}

@@ -8,8 +8,6 @@ import Candidates from './views/Candidates';
 import './assets/styles/config.scss';
 import './assets/styles/grid.scss';
 
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-
 export default function App() {
   return (
     <Router>
