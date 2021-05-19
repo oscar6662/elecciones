@@ -34,9 +34,8 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "start": "npm run third && npm run second",
-    "second": "cd client && npm run start",
-    "third": "cd server && node server"
+    "start": "cd client && npm run start",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "eslintConfig": {
     "extends": "react-app"

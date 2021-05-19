@@ -43,7 +43,7 @@ app.get('/api/user/name', requireAuthentication, async (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+  res.sendFile(path.join(__dirname+'/../client/build/index.html'));
 });
 
 function notFoundHandler(req, res) {
