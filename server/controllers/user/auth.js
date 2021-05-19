@@ -13,7 +13,7 @@ router.use(cookieParser());
 
 router.get('/api/auth', (req, res) => {
   res.redirect(`${process.env.REACT_APP_API_URL}/oauth/authorize?client_id=${process.env.client_id}
-  &redirect_uri=http://localhost:5000/api/auth/callback
+  &redirect_uri=${process.env.host}/api/auth/callback
   &response_type=code
   &scope=full_name+email+vatsim_details`);
 });
@@ -23,7 +23,7 @@ router.get('/api/auth/callback', async (req, res) => {
     grant_type: 'authorization_code',
     client_id: process.env.client_id,
     client_secret: process.env.client_secret,
-    redirect_uri: 'http://localhost:5000/api/auth/callback',
+    redirect_uri: `${process.env.host}/api/auth/callback`,
     code: req.query.code,
   };
 
@@ -56,7 +56,7 @@ router.get('/api/auth/callback', async (req, res) => {
       httpOnly: true,
     });
 
-    return res.redirect('http://localhost:3000/');
+    return res.redirect('/');
   }
   return res.sendStatus(403);
 });
