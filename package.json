@@ -61,7 +61,7 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/notus-react/issues"
   },
-  "homepage": "https://github.com/creativetimofficial/notus-react#readme",
+  "homepage": ".",
   "main": "index.js",
   "author": "Óskar Helgi Berenguer"
 }
