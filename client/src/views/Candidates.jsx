@@ -8,8 +8,6 @@ import '../assets/styles/candidates.scss';
 export default function FormPage(){
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [isValid, setIsValid] = useState(false);
-  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {

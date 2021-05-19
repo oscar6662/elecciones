@@ -47,7 +47,9 @@ export default function FormPage(){
          setTimeout(() => {
           const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+            'Accept': 'application/json'
+           },
             body: JSON.stringify({ 
               name: values.name,
               id: values.id,
