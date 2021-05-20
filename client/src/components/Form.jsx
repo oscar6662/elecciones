@@ -13,7 +13,6 @@ export default function FormPage(){
       if (json.loggedIn === true) {
         const r = await fetch('/api/user/');
         const j = await r.json();
-        console.log(j);
         setData(j);
       }
       setIsLoading(false);
@@ -31,7 +30,7 @@ export default function FormPage(){
     ):(
       
       <Formik
-       initialValues={{ name: data.personal.name_full, id: data.cid, email: data.personal.email }}
+       initialValues={{ name: data.personal.name_full, id: data.cid, email: data.personal.email, text: '' }}
        validate={values => {
          const errors = {};
          if (!values.email) {
@@ -109,7 +108,7 @@ export default function FormPage(){
              name="propuestas"
              onChange={handleChange}
              onBlur={handleBlur}
-             value={values.propuestas}
+             value={values.text}
            /><br></br>
            <button type="submit" disabled={isSubmitting}>
              Submit

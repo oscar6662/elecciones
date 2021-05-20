@@ -9,13 +9,14 @@ dotenv.config();
 export const router = express.Router();
 
 router.post('/api/candidate', requireAuthentication, async (req, res) => {
+  console.log(req.body);
   const {
-    name, id, email, text,
+    name, id, email, propuestas,
   } = req.body;
   const q = 'INSERT INTO candidates (name, id, email, txt) VALUES ($1, $2, $3, $4)';
 
   try {
-    await query(q, [name, id, email, text]);
+    await query(q, [name, id, email, propuestas]);
   } catch (e) {
     res.json({ error: e });
   }
@@ -35,16 +36,14 @@ router.get('/api/candidates', async (req, res) => {
 router.get('/api/candidate/requisites', requireAuthentication, async (req, res) => {
   const data = await userData(req.cookies.token);
   const response = { division: '', rating: '' };
-  if (data.data.vatsim.subdivision !== 'VATSPA') {
+  if (data.data.vatsim.subdivision.id !== 'SPN') {
     response.division = 'error';
-  }
-  if (data.data.vatsim.rating < 4) {
+  } else if (data.data.vatsim.rating < 4) {
     response.rating = 'error';
   }
-  if (response.length < 1) {
+  if (response.division !== 'error' && response.rating !== 'error') {
     res.json({ response: true });
   } else {
-    console.log(response);
     res.json({ response });
   }
 });

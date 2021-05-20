@@ -18,7 +18,6 @@ export default function FormPage(){
       const json = await result.json();
       const r = await fetch('/api/candidate/requisites');
       const j = await r.json();
-
       if(j.response === true){
         setIsValid(true);
       } else {
