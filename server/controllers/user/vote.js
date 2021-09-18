@@ -10,9 +10,9 @@ dotenv.config();
 export const router = express.Router();
 
 export async function validVoter(req, res, next) {
-  const { token } = req.cookies;
-  const q = 'SELECT access, has_voted FROM users WHERE jwt = $1 ';
   try {
+    const { token } = req.cookies;
+    const q = 'SELECT access, has_voted FROM users WHERE jwt = $1 ';
     const r = await query(q, [token]);
     const data = await fetch(`${process.env.REACT_APP_API_URL}/api/user`, {
       headers: {
@@ -40,14 +40,18 @@ router.get('/api/validvoter', requireAuthentication, validVoter, (req, res) => r
 router.post('/api/vote', requireAuthentication, validVoter, async (req, res) => {
   const { token } = req.cookies;
   const userid = await userId(token);
+  console.log(req.body);
   const { id } = req.body;
+  console.log(id);
   const q = 'UPDATE candidates SET votes = votes + 1 WHERE id = $1';
   const q2 = 'UPDATE users SET has_voted = true WHERE id = $1';
   try {
     await query(q, [id]);
     await query(q2, [userid]);
+    console.log("succ");
     return res.json('success');
   } catch (error) {
+    console.log(error);
     return res.json({ error });
   }
 });

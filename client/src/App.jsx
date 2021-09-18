@@ -13,7 +13,6 @@ import s from './app.module.scss';
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [validVoter, setValidVoter] = useState(false);
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
@@ -23,12 +22,7 @@ export default function App() {
       setLoggedIn(json);
       const r = await fetch('/api/user/isadmin');
       const j = await r.json();
-      setAdmin(Boolean(j));
-      const r2 = await fetch('/api/validvoter');
-      const j2 = await r2.json();
-      setValidVoter(Boolean(j2));
-      console.log(loggedIn);
-      console.log(validVoter);
+      setAdmin(Boolean(j));      
       setIsLoading(false);
     };
     fetchData();
@@ -43,7 +37,7 @@ export default function App() {
         <Switch>
           <Route exact path="/" children={<Index/>}/>
           <Route exact path="/vote">
-                  {!loggedIn || !validVoter ? <Redirect to="/" /> : <Vote />}
+                  {!loggedIn ? <Redirect to="/" /> : <Vote />}
           </Route>
           <Route path="**" children={<Index/>}/>
         </Switch>

@@ -9,19 +9,46 @@ const { Meta } = Card;
 export default function FormPage(){
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [error, setError] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [isError, setError] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await fetch('/api/candidates');
-
-      const json = await result.json();
-      setData(json);
+        try {
+            const r1 = await fetch('/api/candidates');
+            const j1 = await r1.json();
+            const r2 = await fetch ('/api/validvoter');
+            const j2 = await r2.json();
+            setData(j1);
+            setIsValid(Boolean(j2)); 
+        } catch (error) {
+          setError(true)
+        }
       setIsLoading(false);
     };
     fetchData();
-  },[error]);
+  },[isValid, isError]);
 
+  async function sendVote(id) {
+    setIsLoading(true);
+    try {
+        const ret = await fetch('/api/vote ', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: id,
+            })
+        })
+    } catch (error) {
+        setError(true);
+        return;
+    }
+    //return the success page.
+  }
 
   return(
     <div className={s.vote}>
@@ -36,30 +63,33 @@ export default function FormPage(){
           />
         </Card>
       ) : (
-        data.map(i => (
-          <Card
-            style={{ width: 300 }}
-            cover={
-              <img
-                alt="example"
-                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+        isValid ? (
+          data.map(i => (
+            <Card
+              style={{ width: 300 }}
+              cover={
+                <img
+                  alt="example"
+                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                />
+              }
+              actions={[
+                <div onClick={() => sendVote(i.id)} style={{'display':'flex','justifyContent': 'center','flexDirection':'row', 'alignItems':'center'}}>
+                  <CheckOutlined key="vote" /><p style={{'margin-bottom':'0', 'marginLeft': '5px'}}>Votar</p>
+                </div>,
+  
+              ]}
+            >
+              <Meta
+                avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                title={i.user_name}
+                description="This is the description"
               />
-            }
-            actions={[
-              <div style={{'display':'flex','justifyContent': 'center','flexDirection':'row', 'alignItems':'center'}}>
-                <CheckOutlined key="vote" /><p style={{'margin-bottom':'0', 'marginLeft': '5px'}}>Votar</p>
-              </div>,
-
-            ]}
-          >
-            <Meta
-              avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-              title={i.user_name}
-              description="This is the description"
-            />
-          </Card>
-        ))
-        
+            </Card>
+          ))
+        ) : (
+          <p>No se te permite participar en las elecciones</p>
+        )
       )}
     
         

@@ -19,7 +19,7 @@ export default function Index(){
   
   return(
     <div className={s.index}>
-      <Steps current={0} percent = {percent} style={{'padding-top':'1rem'}}>
+      <Steps current={0} percent = {percent} style={{'paddingTop':'1rem'}}>
         <Step title={
           <a href = "https://forums.vatsim.net/topic/31977-vacancy-vacc-director-spain">
           Presentarse como candidato
