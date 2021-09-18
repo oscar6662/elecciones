@@ -21,14 +21,14 @@ export default function App() {
       const result = await fetch('/api/authenticated');
       const json = await result.json();
       setLoggedIn(json);
-      if(loggedIn) {
-        const r = await fetch('/api/user/isadmin');
-        const j = await r.json();
-        setAdmin(Boolean(j));
-        const r2 = await fetch('/api/validvoter');
-        const j2 = await r2.json();
-        setValidVoter(Boolean(j2));
-      }
+      const r = await fetch('/api/user/isadmin');
+      const j = await r.json();
+      setAdmin(Boolean(j));
+      const r2 = await fetch('/api/validvoter');
+      const j2 = await r2.json();
+      setValidVoter(Boolean(j2));
+      console.log(loggedIn);
+      console.log(validVoter);
       setIsLoading(false);
     };
     fetchData();

@@ -9,7 +9,6 @@ import s from './NavBar.module.scss';
 
 export default function NavBar() {
   const path  = useLocation();
-  console.log(path.pathname);
   const pages = {
     '/vote': 'Votar',
     '/candidates': 'Candidatos',

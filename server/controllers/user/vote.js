@@ -24,7 +24,7 @@ export async function validVoter(req) {
     return (
       (j.data.vatsim.subdivision.id === 'SPN'
       && j.data.vatsim.rating.id >= 0
-      && r.rows[0].has_voted)
+      && !r.rows[0].has_voted)
     );
   } catch (e) {
     return false;
@@ -32,7 +32,7 @@ export async function validVoter(req) {
 }
 
 router.get('/api/validvoter', requireAuthentication, async (req, res) => {
-  res.json(validVoter(req));
+  res.json(await validVoter(req));
 });
 
 router.post('/api/vote', requireAuthentication, validVoter, async (req, res) => {
