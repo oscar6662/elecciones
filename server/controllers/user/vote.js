@@ -9,7 +9,7 @@ dotenv.config();
 
 export const router = express.Router();
 
-export async function validVoter(req) {
+export async function validVoter(req, res, next) {
   const { token } = req.cookies;
   const q = 'SELECT access, has_voted FROM users WHERE jwt = $1 ';
   try {
@@ -21,19 +21,21 @@ export async function validVoter(req) {
       },
     });
     const j = await data.json();
-    return (
+    if (
       (j.data.vatsim.subdivision.id === 'SPN'
       && j.data.vatsim.rating.id >= 0
       && !r.rows[0].has_voted)
-    );
+    ) {
+      return next();
+    }
   } catch (e) {
-    return false;
+    return res.json(e);
   }
+  return res.json({ error: 'an error occurred' });
 }
 
-router.get('/api/validvoter', requireAuthentication, async (req, res) => {
-  res.json(await validVoter(req));
-});
+// eslint-disable-next-line arrow-body-style
+router.get('/api/validvoter', requireAuthentication, validVoter, (req, res) => res.json(true));
 
 router.post('/api/vote', requireAuthentication, validVoter, async (req, res) => {
   const { token } = req.cookies;

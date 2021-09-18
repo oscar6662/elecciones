@@ -14,6 +14,6 @@ router.get('/api/candidates', requireAuthentication, validVoter, async (req, res
     const data = await query(q);
     res.json(data.rows);
   } catch (e) {
-    res.json({ error: e });
+    res.json(e);
   }
 });
