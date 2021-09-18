@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from 'react';
+import React from 'react';
 import { Steps } from 'antd';
 
 import 'antd/dist/antd.css';
@@ -6,27 +6,28 @@ import s from './Index.module.scss';
 const { Step } = Steps;
 
 export default function Index(){
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const result = await fetch('/api/user');
-      const json = await result.json();
-      console.log(json);
-      setData(json);
-      setIsLoading(false);
-    };
-    fetchData();
-  },[true]);
+  const date = new Date(Date.now());
+  let finalDate = new Date();
+  finalDate.setUTCDate(30);
+  finalDate.setUTCHours(23);
+  finalDate.setUTCMinutes(59);
+  let startDate = new Date();
+  startDate.setUTCDate(16);
+  startDate.setUTCHours(9);
+  startDate.setUTCMinutes(36);
+  const percent = 100-((finalDate-date)/(finalDate-startDate))*100;
   
   return(
     <div className={s.index}>
-      <Steps progressDot current={1} style={{'padding-top':'1rem'}}>
-        <Step title="Primer Paso" description="This is a description." />
-        <Step title="Segundo Paso" description="This is a description." />
-        <Step title="Tercer Paso" description="This is a description." />
+      <Steps current={0} percent = {percent} style={{'padding-top':'1rem'}}>
+        <Step title={
+          <a href = "https://forums.vatsim.net/topic/31977-vacancy-vacc-director-spain">
+          Presentarse como candidato
+          </a>} 
+          description="Hasta el 30 de Septiembre"
+        />
+        <Step title="Votar Candidato" description="Fecha sin determinar" />
+        <Step title="Resultados" />
       </Steps>
 
     </div>

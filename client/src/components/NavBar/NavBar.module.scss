@@ -1,0 +1,17 @@
+.navbar {
+  min-height: 5rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  &__login {
+    svg{
+      margin-right: 1rem;
+    }
+  }
+  &__logout {
+    svg{
+      margin-left: 1rem;
+    }
+    
+  }
+}

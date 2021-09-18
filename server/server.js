@@ -11,7 +11,7 @@ import {
 } from './controllers/user/auth.js';
 import { router as candidateRouter } from './controllers/user/candidates.js';
 import { router as voteRouter } from './controllers/user/vote.js';
-import { userData } from './controllers/user/users.js';
+import { userData, userIsAdmin } from './controllers/user/users.js';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5000;
 
 const app = express();
-//app.use(express.static(path.join(__dirname, '/../client/build')));
+app.use(express.static(path.join(__dirname, '/../client/build')));
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
@@ -29,10 +29,11 @@ app.use(voteRouter);
 
 
 app.get('/api/authenticated', async (req, res) => {
-  if (await isAuthenticated(req)) {
-    return res.json({ loggedIn: true });
-  }
-  return res.json({ loggedIn: false });
+  return res.json(await isAuthenticated(req));
+});
+
+app.get('/api/user/isadmin', async (req, res) => {
+  return res.json(await userIsAdmin(req));
 });
 
 app.get('/api/user/name', requireAuthentication, async (req, res) => {

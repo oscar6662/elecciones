@@ -21,13 +21,24 @@ export async function userData(token) {
   }
 }
 
-export async function userIsAdmin(token) {
+export async function userId(token) {
+  const q = 'SELECT id FROM users WHERE jwt = $1 ';
+  try {
+    const r = await query(q, [token]);
+    return await r.rows[0].id;
+  } catch (e) {
+    return { error: e };
+  }
+}
+
+export async function userIsAdmin(req) {
+  const { token } = req.cookies;
   const q = 'SELECT admin FROM users WHERE jwt = $1 ';
   try {
     const r = await query(q, [token]);
-    return await r.rows[0].admin;
+    return r.rows[0].admin;
   } catch (e) {
-    return { error: e };
+    return e;
   }
 }
 

@@ -11,21 +11,21 @@ import './assets/styles/config.scss';
 import s from './app.module.scss';
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [validVoter, setValidVoter] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [validVoter, setValidVoter] = useState(false);
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await fetch('/api/authenticated');
       const json = await result.json();
-      setLoggedIn(json.loggedIn);
+      setLoggedIn(json);
       if(loggedIn) {
-        const r = await fetch('/api/user/admin');
+        const r = await fetch('/api/user/isadmin');
         const j = await r.json();
         setAdmin(Boolean(j));
-        const r2 = await fetch('/api/user/validvoter');
+        const r2 = await fetch('/api/validvoter');
         const j2 = await r2.json();
         setValidVoter(Boolean(j2));
       }
@@ -38,19 +38,16 @@ export default function App() {
       <div className={s.loading}>
         <ReactLoading type={'bubbles'} color={'black'}/>
       </div>
-      
     ) : (
-    <Layout>
-      <Router>
-      <Switch>
-        <Route exact path="/" children={<Index/>}/>
-        <Route exact path="/vote">
-                {!loggedIn | !validVoter ? <Redirect to="/" /> : <Vote />}
-        </Route>
-        <Route path="**" children={<Index/>}/>
-      </Switch>
-    </Router>
-    </Layout>
+      <Layout>
+        <Switch>
+          <Route exact path="/" children={<Index/>}/>
+          <Route exact path="/vote">
+                  {!loggedIn || !validVoter ? <Redirect to="/" /> : <Vote />}
+          </Route>
+          <Route path="**" children={<Index/>}/>
+        </Switch>
+      </Layout>
     )
   )
 }
