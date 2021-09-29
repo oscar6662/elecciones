@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS candidates (
   id integer unique not null,
   user_name varchar(128) not null,
   user_email varchar(128) not null,
+  user_banner varchar(1024) DEFAULT ('https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'),
   img_url varchar(1024),
   description varchar(4096),
   votes integer not null DEFAULT 0

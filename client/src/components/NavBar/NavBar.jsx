@@ -30,7 +30,7 @@ export default function NavBar() {
   return (
     <header className={s.navbar}>
       <div></div>
-      <h1>{pages[path.pathname]}</h1>
+      <div></div>
       <div>
         {isLoading ? (
           <ReactLoading type={'bubbles'} color={'black'}/>

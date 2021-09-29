@@ -1,4 +1,12 @@
 .vote {
   min-height: 100%;
   margin-top:10rem;
+  &__candidates{
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  &__candidates>div{
+    margin: 2rem;
+  }
 }

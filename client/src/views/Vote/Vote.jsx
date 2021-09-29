@@ -1,5 +1,5 @@
 import React, { useState, useEffect  } from 'react';
-import {Card,Avatar, Button} from 'antd';
+import {Card,Avatar, Result} from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 
 import s from './Vote.module.scss';
@@ -11,6 +11,7 @@ export default function FormPage(){
   const [data, setData] = useState([]);
   const [isValid, setIsValid] = useState(false);
   const [isError, setError] = useState([]);
+  const [hasVoted, setHasVoted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,8 +20,11 @@ export default function FormPage(){
             const j1 = await r1.json();
             const r2 = await fetch ('/api/validvoter');
             const j2 = await r2.json();
+            const r3 = await fetch ('/api/hasvoted');
+            const j3 = await r3.json();
             setData(j1);
             setIsValid(Boolean(j2)); 
+            setHasVoted(Boolean(j3));
         } catch (error) {
           setError(true)
         }
@@ -30,9 +34,9 @@ export default function FormPage(){
   },[isValid, isError]);
 
   async function sendVote(id) {
-    setIsLoading(true);
+    
     try {
-        const ret = await fetch('/api/vote ', {
+        await fetch('/api/vote ', {
             credentials: 'include',
             method: 'POST',
             headers: {
@@ -47,7 +51,7 @@ export default function FormPage(){
         setError(true);
         return;
     }
-    //return the success page.
+      setIsValid(!isValid);
   }
 
   return(
@@ -64,35 +68,45 @@ export default function FormPage(){
         </Card>
       ) : (
         isValid ? (
-          data.map(i => (
+          <div className={s.vote__candidates}>
+          {data.map(i => (
             <Card
               style={{ width: 300 }}
               cover={
                 <img
-                  alt="example"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                  alt="banner"
+                  src={i.img_url}
                 />
               }
               actions={[
                 <div onClick={() => sendVote(i.id)} style={{'display':'flex','justifyContent': 'center','flexDirection':'row', 'alignItems':'center'}}>
                   <CheckOutlined key="vote" /><p style={{'margin-bottom':'0', 'marginLeft': '5px'}}>Votar</p>
                 </div>,
-  
               ]}
             >
               <Meta
-                avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                avatar={<Avatar src={i.img_url} />}
                 title={i.user_name}
-                description="This is the description"
+                description={i.description}
               />
             </Card>
-          ))
+          ))}
+          </div>
         ) : (
-          <p>No se te permite participar en las elecciones</p>
+          hasVoted? (
+            <Result
+              status="success"
+              title="Gracias por votar"
+            />
+          ) : (
+            <ul>
+              <li>No perteneces a vatspa</li>
+              <li>Estás marcado como usuario inactivo</li>
+              <li>Ya has votado</li>
+            </ul>
+          )
         )
-      )}
-    
-        
+      )}      
     </div>
   );
 }

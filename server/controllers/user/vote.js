@@ -31,11 +31,23 @@ export async function validVoter(req, res, next) {
   } catch (e) {
     return res.json(e);
   }
-  return res.json({ error: 'an error occurred' });
+  return res.json(false);
 }
 
 // eslint-disable-next-line arrow-body-style
 router.get('/api/validvoter', requireAuthentication, validVoter, (req, res) => res.json(true));
+
+router.get('/api/hasvoted', requireAuthentication, async (req, res) => {
+  const { token } = req.cookies;
+  const userid = await userId(token);
+  const q = 'SELECT has_voted FROM users WHERE id = $1';
+  try {
+    const r = await query(q, [userid]);
+    return res.json(r.rows[0]);
+  } catch (error) {
+    return res.json(false);
+  }
+});
 
 router.post('/api/vote', requireAuthentication, validVoter, async (req, res) => {
   const { token } = req.cookies;
