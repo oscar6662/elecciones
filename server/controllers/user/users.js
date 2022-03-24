@@ -1,90 +1,116 @@
+/* eslint-disable guard-for-in */
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import jwt from 'jsonwebtoken';
+import moment from 'moment';
 import { query } from '../db/db.js';
 
 dotenv.config();
 
-export async function userData(token) {
-  const q = 'SELECT access FROM users WHERE jwt = $1 ';
+export async function findById(id) {
+  if (!id) return null;
+  const q = 'SELECT * FROM users WHERE `id` = ?';
   try {
-    const r = await query(q, [token]);
-    const data = await fetch(`${process.env.REACT_APP_API_URL}/api/user`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${r.rows[0].access}`,
-      },
-    });
-    return await data.json();
+    const result = await query(q, [id]);
+    if (result.length > 0) {
+      return result[0];
+    }
   } catch (e) {
-    return { error: e };
+    console.error(e);
   }
+  return null;
 }
 
-export async function userId(token) {
-  const q = 'SELECT id FROM users WHERE jwt = $1 ';
-  try {
-    const r = await query(q, [token]);
-    return await r.rows[0].id;
-  } catch (e) {
-    return { error: e };
+export function userIsAdmin(req, res, next) {
+  if (req.user && req.user.admin) {
+    return next();
   }
+
+  return res.status(403).json({ error: 'Forbidden' });
 }
 
-export async function userIsAdmin(req) {
-  const { token } = req.cookies;
-  const q = 'SELECT admin FROM users WHERE jwt = $1 ';
-  try {
-    const r = await query(q, [token]);
-    return r.rows[0].admin;
-  } catch (e) {
-    return e;
+export function userIsMentor(req, res, next) {
+  if (req.user && req.user.mentor) {
+    return next();
   }
+
+  return res.status(403).json({ error: 'Forbidden' });
 }
 
-export async function userExists(id) {
-  const q = 'SELECT COUNT(1) FROM users WHERE id = $1';
+export async function allUsers() {
+  const q = 'SELECT user_name, id, mentor, admin FROM users';
   try {
-    const r = await query(q, [id]);
-    if (r.rows[0].count === '1') return true;
-    return false;
+    const r = await query(q);
+    return r;
   } catch (error) {
     return false;
   }
 }
 
-export async function createUser(data, r) {
-  const payload = { email: data.cid };
-  const tokenOptions = { expiresIn: r.expires_in };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, tokenOptions);
-  const expiry = new Date(Date.now() + r.expires_in * 1000);
-  const q = 'INSERT INTO users'
-    + '(id, user_name, user_email, has_voted, admin, jwt, access, refresh, date)'
-    + 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+async function isUserActive(cid) {
   try {
-    await query(q,
-      [data.cid, data.personal.name_full,
-        data.personal.email, false, false,
-        token, r.access_token, r.refresh_token, expiry,
-      ]);
-  } catch (error) {
-    return error;
-  }
-  return token;
-}
-
-export async function makeToken(data, r) {
-  const payload = { email: data.cid };
-  const tokenOptions = { expiresIn: r.expires_in };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, tokenOptions);
-  const expiry = new Date(Date.now() + r.expires_in * 1000);
-  // eslint-disable-next-line max-len
-  const q = `UPDATE users SET jwt = $1, access = $2, refresh = $3, date = $4 WHERE id = ${data.cid}`;
-  try {
-    await query(q, [token, r.access_token, r.refresh_token, expiry]);
+    // eslint-disable-next-line max-len
+    const q = 'SELECT * FROM training_history WHERE student_id = ? AND training = ? AND DATEDIFF(NOW(), date) > 90';
+    const prev = await query(q, [cid, 'reactivacion']);
+    if (prev[0] !== undefined) return true;
   } catch (error) {
     console.log(error);
-    return false;
   }
-  return token;
+
+  const f1 = await fetch(`https://api.vatsim.net/api/ratings/${cid}/atcsessions/LE/?start=${moment().subtract(90, 'd').format('YYYY-MM-DD')}`);
+  const f2 = await fetch(`https://api.vatsim.net/api/ratings/${cid}/atcsessions/GC/?start=${moment().subtract(90, 'd').format('YYYY-MM-DD')}`);
+  const connectionsLE = await f1.json();
+  const connectionsGC = await f2.json();
+  const count = connectionsLE.count + connectionsGC.count;
+  if (count === 0) return false;
+  let hours = 0;
+  // eslint-disable-next-line guard-for-in
+  // eslint-disable-next-line no-restricted-syntax
+  for (const connection in connectionsLE.results) {
+    hours += connectionsLE.results[connection].minutes_on_callsign / 60;
+    if (hours > 5) return true;
+  }
+  // eslint-disable-next-line guard-for-in
+  // eslint-disable-next-line no-restricted-syntax
+  for (const connection in connectionsGC.results) {
+    hours += connectionsGC.results[connection].minutes_on_callsign / 60;
+    if (hours > 5) return true;
+  }
+  return false;
+}
+
+export async function updateAccess(id, access) {
+  const q = 'UPDATE users SET access = ? WHERE id = ?';
+  try {
+    await query(q, [id, access]);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function createUser(data, access) {
+  const q = 'INSERT INTO users'
+    // eslint-disable-next-line max-len
+    + '(id, user_name, user_email, rating, local_controller, subdivision, active_controller, access) '
+    + 'VALUES (?,?,?,?,?,?,?) RETURNING *';
+  const q1 = 'INSERT INTO training_users (id) VALUES (?)';
+  const active = isUserActive(data.cid);
+
+  try {
+    const result = await query(q, [
+      parseInt(data.cid, 10),
+      data.personal.name_full,
+      data.personal.email,
+      data.vatsim.rating.id,
+      (data.vatsim.subdivision.code === 'SPN'),
+      data.vatsim.subdivision.code,
+      active,
+      access,
+    ]);
+    await query(q1, parseInt(data.cid, 10));
+    if (result.length > 0) return result;
+    return true;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
